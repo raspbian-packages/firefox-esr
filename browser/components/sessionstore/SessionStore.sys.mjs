@@ -6589,7 +6589,7 @@ var SessionStoreInternal = {
         // _getWindowDimension.
         let desktopToCssScale =
           aWindow.desktopToDeviceScale / aWindow.devicePixelRatio;
-        aWindow.moveTo(aLeft * desktopToCssScale, aTop * desktopToCssScale);
+        aWindow.moveTo((aLeft < -aWidth) ? 0 : aLeft * desktopToCssScale, (aTop < -aHeight) ? 0 : aTop * desktopToCssScale);
       }
       if (
         aWidth &&
@@ -6617,9 +6617,8 @@ var SessionStoreInternal = {
           case "minimized":
             if (aSizeModeBeforeMinimized == "maximized") {
               aWindow.maximize();
+              break;
             }
-            aWindow.minimize();
-            break;
           case "normal":
             aWindow.restore();
             break;
