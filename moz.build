@@ -231,4 +231,7 @@ SPHINX_TREES["content-security"] = "docs/content-security"
 
 SPHINX_TREES["jsloader"] = "docs/jsloader"
 
+if not CONFIG["LIBXUL_SDK"]:
+    DIRS += ["debian/extra-stuff"]
+
 include("build/templates.mozbuild")
