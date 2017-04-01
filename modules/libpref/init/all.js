@@ -3072,7 +3072,12 @@ pref("network.tcp.keepalive.idle_time", 600); // seconds; 10 mins
 
 // All the Geolocation preferences are here.
 //
-pref("geo.provider.network.url", "https://www.googleapis.com/geolocation/v1/geolocate?key=%GOOGLE_LOCATION_SERVICE_API_KEY%");
+#if defined(GOOGLE_LOCATION_SERVICE_API_KEY)
+  pref("geo.provider.network.url", "https://www.googleapis.com/geolocation/v1/geolocate?key=%GOOGLE_LOCATION_SERVICE_API_KEY%");
+#else
+  // Use MLS on Nightly and early Beta.
+  pref("geo.provider.network.url", "https://location.services.mozilla.com/v1/geolocate?key=%MOZILLA_API_KEY%");
+#endif
 
 // Timeout to wait before sending the location request.
 pref("geo.provider.network.timeToWaitBeforeSending", 5000);
