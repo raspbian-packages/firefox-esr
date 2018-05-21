@@ -41,7 +41,7 @@ namespace WebCore {
 
 // Define HAVE_DENORMAL if we support flushing denormals to zero.
 
-#if defined(__SSE__) || defined(__arm__) || defined(__aarch64__)
+#if defined(__SSE__) || (defined(__arm__) && !defined(__SOFTFP__)) || defined(__aarch64__)
 #  define HAVE_DENORMAL 1
 #endif
 
