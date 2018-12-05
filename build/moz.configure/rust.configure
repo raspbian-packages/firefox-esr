@@ -111,6 +111,8 @@ def rust_compiler(rustc_info, cargo_info):
 
 
 @depends(rustc, when=rust_compiler)
+@imports('sys')
+@imports(_from='__builtin__', _import='repr')
 def rust_supported_targets(rustc):
     out = check_cmd_output(rustc, '--print', 'target-list').splitlines()
     # The os in the triplets used by rust may match the same OSes, in which
@@ -118,9 +120,14 @@ def rust_supported_targets(rustc):
     per_os = {}
     ambiguous = set()
     per_raw_os = {}
+    #HACK: if there are multiple matches the algorithm uses the last one
+    #put arm-unknown-linux-gnuebihf on the end of the list so it gets preffered
+    out.append('arm-unknown-linux-gnueabihf')
     for t in out:
+        traw = t
         t = split_triplet(t, allow_unknown=True)
         key = (t.cpu, t.endianness, t.os)
+        sys.stdout.write(traw+' '+repr(key)+' '+repr(t.raw_os)+'\n')
         if key in per_os:
             previous = per_os[key]
             per_raw_os[(previous.cpu, previous.endianness,
@@ -152,11 +159,13 @@ def rust_triple_alias(host_or_target):
     @depends(rustc, host_or_target, c_compiler, rust_supported_targets,
              when=rust_compiler)
     @imports('os')
+    @imports('sys')
     @imports('subprocess')
     @imports(_from='mozbuild.configure.util', _import='LineIO')
     @imports(_from='mozbuild.shellutil', _import='quote')
     @imports(_from='tempfile', _import='mkstemp')
     @imports(_from='textwrap', _import='dedent')
+    @imports(_from='__builtin__', _import='repr')
     def rust_target(rustc, host_or_target, compiler_info,
                     rust_supported_targets):
         # Rust's --target options are similar to, but not exactly the same
@@ -180,8 +189,9 @@ def rust_triple_alias(host_or_target):
 
         rustc_target = rust_supported_targets.per_os.get(
             (host_or_target.cpu, host_or_target.endianness, host_or_target_os))
-
+        #sys.stdout.write(host_or_target.cpu+'\n')
         if rustc_target is None:
+            sys.stdout.write('using per_raw_os.get with tuple '+repr(((host_or_target.cpu, host_or_target.endianness,host_or_target_raw_os)))+'\n')
             rustc_target = rust_supported_targets.per_raw_os.get(
                 (host_or_target.cpu, host_or_target.endianness,
                  host_or_target_raw_os))
