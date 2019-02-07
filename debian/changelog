@@ -1,11 +1,19 @@
-firefox-esr (60.4.0esr-1+rpi1) buster-staging; urgency=medium
+firefox-esr (60.5.0esr-1+rpi1) buster-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
     on raspbian.
   * Fix clean target.
 
- -- Raspbian forward porter <root@raspbian.org>  Sun, 06 Jan 2019 14:03:20 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Thu, 07 Feb 2019 03:21:55 +0000
+
+firefox-esr (60.5.0esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2019-02, also known as:
+    CVE-2018-18500, CVE-2018-18505, CVE-2018-18501.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 30 Jan 2019 09:53:01 +0900
 
 firefox-esr (60.4.0esr-1) unstable; urgency=medium
 
