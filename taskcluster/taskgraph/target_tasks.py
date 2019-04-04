@@ -60,8 +60,6 @@ def filter_release_tasks(task, parameters):
             # On beta, Nightly builds are already PGOs
             'linux-pgo', 'linux64-pgo',
             'win32-pgo', 'win64-pgo',
-            # ASAN is central-only
-            'linux64-asan-reporter-nightly',
             ):
         return False
 
@@ -635,3 +633,9 @@ def target_tasks_release_simulation(full_task_graph, parameters, graph_config):
             and filter_out_cron(t, parameters)
             and filter_for_target_project(t)
             and filter_out_android_on_esr(t)]
+
+
+@_target_task('nothing')
+def target_tasks_nothing(full_task_graph, parameters, graph_config):
+    """Select nothing, for DONTBUILD pushes"""
+    return []

@@ -1,11 +1,33 @@
-firefox-esr (60.5.1esr-1+rpi1) buster-staging; urgency=medium
+firefox-esr (60.6.1esr-1+rpi1) buster-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
     on raspbian.
   * Fix clean target.
 
- -- Raspbian forward porter <root@raspbian.org>  Mon, 25 Feb 2019 19:08:54 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Thu, 04 Apr 2019 04:17:40 +0000
+
+firefox-esr (60.6.1esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2019-10, also known as:
+    CVE-2019-9810, CVE-2019-9813.
+
+ -- Mike Hommey <glandium@debian.org>  Sun, 24 Mar 2019 08:15:11 +0900
+
+firefox-esr (60.6.0esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2019-08, also known as:
+    CVE-2019-9790, CVE-2019-9791, CVE-2019-9792, CVE-2019-9793,
+    CVE-2019-9795, CVE-2019-9796, CVE-2018-18506, CVE-2019-9788.
+
+  * debian/rules: Disable debug symbols on mips/mipsel on buster.
+    The rust compiler can't deal with them in the available address space.
+  * debian/browser.mozconfig.in: Adjust to the upstream change wrt Google
+    API key configure options.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 20 Mar 2019 10:18:56 +0900
 
 firefox-esr (60.5.1esr-1) unstable; urgency=medium
 
