@@ -7,6 +7,7 @@ firefox-esr (60.8.0esr-1+rpi1) bullseye-staging; urgency=medium
 
   [changes introduce in 60.8.0esr-1+rpi1 by Peter Michael Green]
   * Use a fake homedir for build (Closes: 933757).
+  * Don't use system libvpx (changes adapted from https://salsa.debian.org/mozilla-team/firefox/commit/f26d0387eea70b2ebceabeb86ec728227199f302 )
 
  -- Peter Michael Green <plugwash@raspbian.org>  Wed, 14 Aug 2019 22:49:11 +0000
 

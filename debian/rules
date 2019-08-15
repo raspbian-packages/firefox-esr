@@ -25,9 +25,9 @@ SYSTEM_LIBS = zlib bz2 ffi
 ifeq (,$(filter wheezy jessie stretch,$(DIST)))
 SYSTEM_LIBS += hunspell nspr nss sqlite libevent
 endif
-ifeq (,$(filter wheezy jessie,$(DIST)))
-SYSTEM_LIBS += vpx
-endif
+#ifeq (,$(filter wheezy jessie bullseye,$(DIST)))
+#SYSTEM_LIBS += vpx
+#endif
 
 define system_lib
 USE_SYSTEM_$(1) ?= 1
