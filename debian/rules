@@ -370,3 +370,6 @@ $(ALL_STAMPS)::
 	@mkdir -p stamps
 	$(if $(wildcard $@),,touch $@)
 endif
+
+override_dh_strip_nondeterminism:
+	echo dh_strip_nondeterminism disabled.
