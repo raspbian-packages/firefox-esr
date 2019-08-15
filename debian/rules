@@ -1,4 +1,6 @@
 #!/usr/bin/make -f
+export HOME=$(CURDIR)/fakehome
+
 TESTDIR = $(shell dh_testdir || echo no)
 ifeq (,$(TESTDIR))
 include debian/make.mk
@@ -192,6 +194,7 @@ debian/iceweasel-l10n-%.maintscript: debian/removed_conffiles
 endif
 
 override_dh_auto_configure:
+	mkdir -p fakehome
 
 stamps/prepare-configure:: stamps/dummy
 	for dir in $(AUTOCONF_DIRS); do \
@@ -300,6 +303,7 @@ endif
 		done; \
 	done
 	rm -rf build-browser
+	rm -rf fakehome
 
 override_dh_clean:
 	dh_clean -XCargo.toml.orig

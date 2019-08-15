@@ -5,7 +5,10 @@ firefox-esr (60.8.0esr-1+rpi1) bullseye-staging; urgency=medium
     on raspbian.
   * Fix clean target.
 
- -- Raspbian forward porter <root@raspbian.org>  Fri, 02 Aug 2019 20:39:30 +0000
+  [changes introduce in 60.8.0esr-1+rpi1 by Peter Michael Green]
+  * Use a fake homedir for build (Closes: 933757).
+
+ -- Peter Michael Green <plugwash@raspbian.org>  Wed, 14 Aug 2019 22:49:11 +0000
 
 firefox-esr (60.8.0esr-1) unstable; urgency=medium
 
