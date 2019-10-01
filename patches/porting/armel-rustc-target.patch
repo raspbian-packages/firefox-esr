@@ -1,0 +1,14 @@
+--- a/build/moz.configure/init.configure
++++ b/build/moz.configure/init.configure
+@@ -662,7 +662,10 @@
+         canonical_cpu = 'sparc'
+         endianness = 'big'
+     elif cpu.startswith('arm'):
+-        canonical_cpu = 'arm'
++        if cpu.startswith('armv4') or cpu.startswith('armv5'):
++            canonical_cpu = cpu
++        else:
++            canonical_cpu = 'arm'
+         endianness = 'big' if cpu.startswith(('armeb', 'armbe')) else 'little'
+     elif cpu in ('mips', 'mipsel'):
+         canonical_cpu = 'mips32'
