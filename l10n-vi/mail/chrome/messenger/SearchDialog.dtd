@@ -1,0 +1,74 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<!-- for SearchDialog.xul -->
+<!ENTITY searchHeading.label         "Tìm kiếm thư trong:">
+<!ENTITY searchHeading.accesskey     "h">
+<!ENTITY searchSubfolders.label      "Tìm kiếm thư mục con">
+<!ENTITY searchSubfolders.accesskey  "e">
+<!ENTITY searchOnServer.label        "Chạy tìm kiếm trên máy chủ">
+<!ENTITY searchOnServer.accesskey    "u">
+<!ENTITY resetButton.label           "Xóa trắng">
+<!ENTITY resetButton.accesskey       "C">
+<!ENTITY openButton.label            "Mở">
+<!ENTITY openButton.accesskey        "n">
+<!ENTITY deleteButton.label          "Xóa">
+<!ENTITY deleteButton.accesskey      "D">
+<!ENTITY searchDialogTitle.label     "Tìm kiếm thư">
+<!ENTITY results.label               "Kết quả">
+<!ENTITY moveButton.label            "Di chuyển đến">
+<!ENTITY moveButton.accesskey        "T">
+<!ENTITY closeCmd.key                "W">
+<!ENTITY openInFolder.label          "Mở trong thư mục">
+<!ENTITY openInFolder.accesskey      "r">
+<!ENTITY saveAsVFButton.label        "Lưu thành thư mục tìm kiếm">
+<!ENTITY saveAsVFButton.accesskey    "v">
+
+<!-- for ABSearchDialog.xul -->
+<!ENTITY abSearchHeading.label       "Tìm kiếm trong:">
+<!ENTITY abSearchHeading.accesskey   "h">
+<!ENTITY propertiesButton.label      "Thuộc tính">
+<!ENTITY propertiesButton.accesskey  "P">
+<!ENTITY composeButton.label         "Viết thư">
+<!ENTITY composeButton.accesskey     "W">
+<!ENTITY deleteCardButton.label      "Xóa">
+<!ENTITY deleteCardButton.accesskey  "D">
+<!ENTITY abSearchDialogTitle.label   "Tìm kiếm sổ địa chỉ nâng cao">
+
+<!-- Thread Pane -->
+<!ENTITY threadColumn.label "Chủ đề">
+<!ENTITY fromColumn.label "Từ">
+<!ENTITY recipientColumn.label "Người nhận">
+<!ENTITY dateColumn.label "Ngày">
+<!ENTITY priorityColumn.label "Mức ưu tiên">
+<!ENTITY tagsColumn.label "Nhãn">
+<!ENTITY accountColumn.label "Tài khoản">
+<!ENTITY statusColumn.label "Trạng thái">
+<!ENTITY sizeColumn.label "Dung lượng">
+<!ENTITY junkStatusColumn.label "Trạng thái thư rác">
+<!ENTITY unreadColumn.label "Chưa đọc">
+<!ENTITY totalColumn.label "Tổng">
+<!ENTITY readColumn.label "Đã đọc">
+<!ENTITY receivedColumn.label "Đã nhận">
+<!ENTITY starredColumn.label "Gắn sao">
+<!ENTITY locationColumn.label "Địa chỉ">
+
+<!-- Thread Pane Tooltips -->
+<!ENTITY columnChooser2.tooltip "Chọn các cột để hiển thị">
+<!ENTITY threadColumn2.tooltip "Hiển thị chủ đề thư">
+<!ENTITY fromColumn2.tooltip "Sắp xếp theo người gửi">
+<!ENTITY recipientColumn2.tooltip "Sắp xếp theo người nhận">
+<!ENTITY dateColumn2.tooltip "Sắp xếp theo ngày">
+<!ENTITY priorityColumn2.tooltip "Sắp xếp theo mức độ ưu tiên">
+<!ENTITY tagsColumn2.tooltip "Sắp xếp theo nhãn">
+<!ENTITY accountColumn2.tooltip "Sắp xếp theo tài khoản">
+<!ENTITY statusColumn2.tooltip "Sắp xếp theo trạng thái">
+<!ENTITY sizeColumn2.tooltip "Sắp xếp theo kích thước">
+<!ENTITY junkStatusColumn2.tooltip "Sắp xếp theo trạng thái thư rác">
+<!ENTITY unreadColumn2.tooltip "Số lượng tin nhắn chưa đọc trong chủ đề">
+<!ENTITY totalColumn2.tooltip "Tổng số tin nhắn trong chủ đề">
+<!ENTITY readColumn2.tooltip "Sắp xếp theo đã đọc">
+<!ENTITY receivedColumn2.tooltip "Sắp xếp theo ngày nhận">
+<!ENTITY starredColumn2.tooltip "Sắp xếp theo sao">
+<!ENTITY locationColumn2.tooltip "Sắp xếp theo địa chỉ">
