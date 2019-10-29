@@ -294,9 +294,7 @@ def checks(target, binary):
         target = HOST
     checks = []
     if target['MOZ_LIBSTDCXX_VERSION']:
-        checks.append(check_stdcxx)
         checks.append(check_libgcc)
-        checks.append(check_glibc)
 
     # Disabled for local builds because of readelf performance: See bug 1472496
     if not buildconfig.substs.get('DEVELOPER_OPTIONS'):
