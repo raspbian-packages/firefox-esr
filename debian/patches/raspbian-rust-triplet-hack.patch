@@ -1,11 +1,10 @@
 Description:  Hack broken rust target selection so it produces the right target on raspbian.
 Author: Peter Michael Green <plugwash@raspbian.org>
-
-Index: firefox-esr-60.3.0esr.new/build/moz.configure/rust.configure
-===================================================================
---- firefox-esr-60.3.0esr.new.orig/build/moz.configure/rust.configure
-+++ firefox-esr-60.3.0esr.new/build/moz.configure/rust.configure
-@@ -111,6 +111,8 @@ def rust_compiler(rustc_info, cargo_info
+diff --git a/build/moz.configure/rust.configure b/build/moz.configure/rust.configure
+index 9647cbc40e..0645c1e53a 100644
+--- a/build/moz.configure/rust.configure
++++ b/build/moz.configure/rust.configure
+@@ -185,6 +185,8 @@ def rust_compiler(rustc_info, cargo_info, build_project):
  
  
  @depends(rustc, when=rust_compiler)
@@ -14,7 +13,7 @@ Index: firefox-esr-60.3.0esr.new/build/moz.configure/rust.configure
  def rust_supported_targets(rustc):
      out = check_cmd_output(rustc, '--print', 'target-list').splitlines()
      # The os in the triplets used by rust may match the same OSes, in which
-@@ -118,9 +120,14 @@ def rust_supported_targets(rustc):
+@@ -192,7 +194,11 @@ def rust_supported_targets(rustc):
      per_os = {}
      ambiguous = set()
      per_raw_os = {}
@@ -24,14 +23,11 @@ Index: firefox-esr-60.3.0esr.new/build/moz.configure/rust.configure
      for t in out:
 +        traw = t
          t = split_triplet(t, allow_unknown=True)
-         key = (t.cpu, t.endianness, t.os)
-+        sys.stdout.write(traw+' '+repr(key)+' '+repr(t.raw_os)+'\n')
-         if key in per_os:
-             previous = per_os[key]
-             per_raw_os[(previous.cpu, previous.endianness,
-@@ -152,11 +159,13 @@ def rust_triple_alias(host_or_target):
-     @depends(rustc, host_or_target, c_compiler, rust_supported_targets,
-              when=rust_compiler)
+         endianness = t.endianness
+         if t.cpu.startswith('thumb') and endianness not in ('big', 'little'):
+@@ -232,11 +238,13 @@ def rust_triple_alias(host_or_target):
+              arm_target, when=rust_compiler)
+     @checking('for rust %s triplet' % host_or_target_str)
      @imports('os')
 +    @imports('sys')
      @imports('subprocess')
@@ -41,16 +37,5 @@ Index: firefox-esr-60.3.0esr.new/build/moz.configure/rust.configure
      @imports(_from='textwrap', _import='dedent')
 +    @imports(_from='__builtin__', _import='repr')
      def rust_target(rustc, host_or_target, compiler_info,
-                     rust_supported_targets):
+                     rust_supported_targets, arm_target):
          # Rust's --target options are similar to, but not exactly the same
-@@ -180,8 +189,9 @@ def rust_triple_alias(host_or_target):
- 
-         rustc_target = rust_supported_targets.per_os.get(
-             (host_or_target.cpu, host_or_target.endianness, host_or_target_os))
--
-+        #sys.stdout.write(host_or_target.cpu+'\n')
-         if rustc_target is None:
-+            sys.stdout.write('using per_raw_os.get with tuple '+repr(((host_or_target.cpu, host_or_target.endianness,host_or_target_raw_os)))+'\n')
-             rustc_target = rust_supported_targets.per_raw_os.get(
-                 (host_or_target.cpu, host_or_target.endianness,
-                  host_or_target_raw_os))
